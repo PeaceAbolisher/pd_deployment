@@ -14,7 +14,7 @@ services:
 
   backend:
     build:
-      context: ../../backend/backend
+      context: ../pd_backend
       dockerfile: Dockerfile
     container_name: backend-container
     ports:
@@ -28,10 +28,12 @@ services:
 
   frontend:
     build:
-      context: ../../frontend
+      context: ../pd_frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8082:8082"
+    depends_on:
+      - backend
 
 volumes:
   mysql_data:
