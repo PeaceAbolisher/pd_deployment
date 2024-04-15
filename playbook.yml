@@ -4,7 +4,9 @@
     compose_file: "{{ compose_file }}"
 
   tasks:
-    - name: create file
-      shell: echo "{{ compose_file }}" > newfile.txt
+    - name: change and create a directory
+      shell: cd .. && mkdir pd_project
+
+
 
 
