@@ -6,7 +6,7 @@
 
   tasks:
     - name: create project directory
-      shell: cd .. && mkdir pd_project && cd "{{ project_folder }}"
+      shell: cd .. && mkdir "{{ project_folder }}" -p && cd "{{ project_folder }}"
 
     - name: Install prerequisites
       apt:
