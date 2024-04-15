@@ -2,7 +2,7 @@
 - hosts: all
   vars:
     compose_file: "{{ compose_file }}"
-    project_folder: "{{ pd_project }}"
+    project_folder: pd_project
 
   tasks:
     - name: create project directory
