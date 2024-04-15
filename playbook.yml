@@ -2,8 +2,12 @@
 - hosts: all
   vars:
     compose_file: "{{ compose_file }}"
+    project_folder: "{{pd_project}}"
 
   tasks:
+    - name: create project directory
+      shell: cd .. && mkdir pd_project && cd "{{ project_folder }}"
+
     - name: Install prerequisites
       apt:
         pkg:
@@ -24,7 +28,7 @@
 
     - name: Run Docker Compose
       community.docker.docker_compose_v2:
-        project_name: my_project
+        project_name: "{{ project_folder }}"
         chdir: "{{ playbook_dir }}"
         compose_files:
           - "{{ compose_file }}"
@@ -32,7 +36,3 @@
         build: yes
         recreate: always
         pull: yes
-
-
-
-
