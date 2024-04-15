@@ -8,19 +8,19 @@
     - name: create project directory
       shell: cd .. && mkdir "{{ project_folder }}" -p && cd "{{ project_folder }}"
 
-    - name: Install prerequisites
-      apt:
-        pkg:
-          - aptitude
-          - python3-pip
-          - curl
-        state: latest
-        update_cache: yes
-        force_apt_get: yes
+#    - name: Install prerequisites
+#      apt:
+#        pkg:
+#          - aptitude
+#          - python3-pip
+#          - curl
+#        state: latest
+#        update_cache: yes
+#        force_apt_get: yes
 
-#    - name: Install Docker
-#      shell: curl -sSL https://get.docker.com/ | sh
-#
+    - name: Install Docker
+      shell: curl -sSL https://get.docker.com/ | sh
+
 #    - name: Install Docker Compose
 #      pip:
 #        name: docker-compose
