@@ -6,7 +6,7 @@
 
   tasks:
     - name: create project directory
-      shell: cd .. && mkdir "{{ project_folder }}" -p && cd "{{ project_folder }}"
+      shell: mkdir -p "{{ project_folder }}"
 
     - name: write variable to file
-      shell: echo "{{ compose_file }}" > touch newfile.txt
+      shell: echo "{{ compose_file }}" > "{{ project_folder }}/newfile.txt"
