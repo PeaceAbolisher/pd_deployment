@@ -1,0 +1,105 @@
+pipeline {
+    agent any
+
+    environment {
+        // docker hub username
+        DOCKER_USERNAME = 'a21280323'
+    }
+
+    stages {
+        stage('Clone/Pull Repositories') {
+            steps {
+                echo 'Updating backend repository...'
+                sh '''
+                    if [ -d "pd_backend/.git" ]; then
+                        cd pd_backend
+                        git pull
+                        cd ..
+                    else
+                        git clone https://github.com/PeaceAbolisher/pd_backend.git
+                    fi
+                '''
+
+                echo 'Updating frontend repository...'
+                sh '''
+                    if [ -d "pd_frontend/.git" ]; then
+                        cd pd_frontend
+                        git pull
+                        cd ..
+                    else
+                        git clone https://github.com/PeaceAbolisher/pd_frontend.git
+                    fi
+                '''
+
+                echo 'Updating deployment repository...'
+                sh '''
+                    if [ -d "pd_deployment/.git" ]; then
+                        cd pd_deployment
+                        git pull
+                        cd ..
+                    else
+                        git clone https://github.com/PeaceAbolisher/pd_deployment.git
+                    fi
+                '''
+            }
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                echo 'Building backend docker image...'
+                dir('pd_backend') {
+                    sh 'docker build -t pd-backend -f Dockerfile .'
+
+                    echo 'Tagging backend docker image...'
+                    sh 'docker tag pd-backend $DOCKER_USERNAME/pd-backend'
+                }
+            }
+        }
+
+        stage('Build Frontend Image') {
+            steps {
+                echo 'Building frontend Docker image...'
+                dir('pd_frontend') {
+                    sh 'docker build -t pd-frontend -f Dockerfile .'
+
+                    echo 'Tagging frontend Docker image...'
+                    sh 'docker tag pd-frontend $DOCKER_USERNAME/pd-frontend'
+                }
+            }
+        }
+
+        stage('Push Images to Docker Hub') {
+            steps {
+                echo 'Pushing backend Docker image to Docker Hub...'
+                sh 'docker push $DOCKER_USERNAME/pd-backend'
+
+                echo 'Pushing frontend Docker image to Docker Hub...'
+                sh 'docker push $DOCKER_USERNAME/pd-frontend'
+            }
+        }
+
+        stage('Deploy with Ansible') {
+            steps {
+                script {
+                    dir('pd_deployment'){
+                        ansiblePlaybook(
+                                playbook: 'playbook.yml',
+                                inventory: 'inventory',
+                                extraVars: [
+                                    compose_file: 'docker-compose.yml'
+                                ]
+                            )
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            mail subject: "Pipeline ${env.JOB_NAME} - Build #${env.BUILD_NUMBER} ${currentBuild.result}",
+                  body: "The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} ${currentBuild.result}.",
+                  to: "filipe.pt567@gmail.com"
+        }
+    }
+}
